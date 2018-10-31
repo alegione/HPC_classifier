@@ -48,6 +48,14 @@ if [ $email == "nil" ]; then
 fi
 
 #project name?
+if [ $Project == "nil" ]; then
+#ask user the name of the project for file name/directory purposes
+	echo -e "${BLUE}Please enter a project title:${NOCOLOUR}"
+	read -e Project
+	echo -e "${BLUE}You entered: ${GREEN}$Project${NOCOLOUR}"
+fi
+
+
 
 #output current queue?
 #determine available cpus?
@@ -126,6 +134,26 @@ fi
 
 #filtering parametres
 
+
+Switch="0"
+
+while [ $Switch -eq "0" ]; do
+  echo -e "${BLUE}The set filtering values are:"
+  echo -e "${YELLOW}Minimum score of at least $MinScore AND minimum alignment of at least $MinAlign"
+  echo -e "${BLUE}Would you like to keep them? (Y/N)"
+  read -e -N 1 choice
+  choice=$(echo -e "$choice" | tr '[:upper:]' '[:lower:]')
+  if [ $choice = "y" ]; then
+    Switch="1"
+  else
+    echo -e "${BLUE}The minimum centrifuge score to keep:${NOCOLOUR}"
+    read -e MinScore
+    echo -e "${BLUE}The minimum centrifuge alignment to keep:${NOCOLOUR}"
+    read -e MinAlign
+    Switch="1"
+  fi
+done
+
 #single direction or paired reads??
 
 #grouped or individual recentrifuge
@@ -139,8 +167,6 @@ ProjectDir="/data/cephfs/0528/"
 
 basename -s ".fastq" $ProjectDir/Reads_to_run/*.fastq > $ProjectDir/readlist.txt
 
-MinScore="300"
-MinAlign="50"
 
 cat << EOT >> "$ProjectDir/$Project.slurm"
 #!/bin/bash
